@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-ivory text-ink font-body antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    @apply font-display;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-maroon px-6 py-3
+      font-semibold text-ivory shadow-soft transition hover:-translate-y-0.5 hover:shadow-lift
+      focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-maroon
+      disabled:cursor-not-allowed disabled:opacity-60;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-ink/20
+      bg-white/60 px-6 py-3 font-semibold text-ink transition hover:-translate-y-0.5 hover:border-ink/40
+      focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-maroon;
+  }
+
+  .section {
+    @apply mx-auto max-w-6xl px-5 py-20 sm:px-8;
+  }
+
+  .eyebrow {
+    @apply mb-3 inline-block rounded-full bg-white/70 px-3 py-1 text-xs font-bold uppercase
+      tracking-[0.2em] text-maroon;
+  }
+
+  .field {
+    @apply w-full rounded-2xl border border-ink/15 bg-white px-4 py-3 text-ink outline-none
+      focus:border-maroon/50;
+  }
+}
+
+/* Faint film grain for a tactile, premium feel. */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
