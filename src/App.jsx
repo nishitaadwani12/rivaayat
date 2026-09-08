@@ -5,7 +5,7 @@ import Featured from './components/Featured'
 import Catalog from './components/Catalog'
 import About from './components/About'
 import Footer from './components/Footer'
-import QuickView from './components/QuickView'
+import ProductDetail from './components/ProductDetail'
 import CartDrawer from './components/CartDrawer'
 import Checkout from './components/Checkout'
 import { useCart } from './context/CartContext'
@@ -31,7 +31,7 @@ export default function App() {
       </main>
       <Footer />
 
-      <QuickView product={quick} onClose={() => setQuick(null)} />
+      <ProductDetail product={quick} onOpen={setQuick} onClose={() => setQuick(null)} />
       <CartDrawer onCheckout={startCheckout} />
       <Checkout open={checkout} onClose={() => setCheckout(false)} />
     </div>
