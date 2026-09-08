@@ -10,25 +10,20 @@ export default function Hero() {
 
   return (
     <section id="top" className="relative min-h-screen overflow-hidden">
-      {/* The rippling silk sits full-height on the right, bleeding off the edge. */}
-      <div className="absolute inset-y-0 right-0 w-full md:w-[58%]">
+      {/* Full-bleed flowing silk behind everything. */}
+      <div className="absolute inset-0">
         {reduced ? (
-          <div className="h-full w-full bg-gradient-to-b from-maroon via-marigold to-teal opacity-90" />
+          <div className="h-full w-full bg-gradient-to-br from-maroon via-marigold to-teal" />
         ) : (
-          <Suspense fallback={<div className="h-full w-full bg-maroon/20" />}>
+          <Suspense fallback={<div className="h-full w-full bg-maroon/30" />}>
             <Hero3D />
           </Suspense>
         )}
-        {/* Fade the silk into the parchment on the left so text stays readable. */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ivory via-ivory/40 to-transparent md:via-transparent" />
       </div>
 
-      {/* Vertical side label, editorial detail. */}
-      <div className="absolute left-6 top-1/2 hidden -translate-y-1/2 lg:block">
-        <span className="block rotate-180 text-xs font-bold uppercase tracking-[0.4em] text-ink/40 [writing-mode:vertical-rl]">
-          Handpicked · Made in India
-        </span>
-      </div>
+      {/* Scrims: lift the left for headline contrast, ground the bottom. */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-r from-ivory via-ivory/70 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-ivory to-transparent" />
 
       <div className="relative mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-5 sm:px-8">
         <motion.span
@@ -44,7 +39,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.05 }}
-          className="max-w-2xl font-display text-6xl font-bold leading-[0.95] tracking-tight text-ink sm:text-7xl lg:text-8xl"
+          className="font-display text-6xl font-bold leading-[0.95] tracking-tight text-ink sm:text-7xl lg:text-8xl"
         >
           {site.brand}
         </motion.h1>
@@ -62,7 +57,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.25 }}
-          className="mt-4 max-w-sm text-ink/70"
+          className="mt-4 max-w-sm text-ink/75"
         >
           {site.intro}
         </motion.p>
@@ -84,7 +79,7 @@ export default function Hero() {
 
       <a
         href="#featured"
-        className="absolute inset-x-0 bottom-8 mx-auto w-fit text-xs font-semibold uppercase tracking-[0.3em] text-ink/40"
+        className="absolute inset-x-0 bottom-8 mx-auto w-fit text-xs font-semibold uppercase tracking-[0.3em] text-ink/50"
       >
         Scroll to explore
       </a>

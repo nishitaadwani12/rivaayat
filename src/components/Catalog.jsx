@@ -38,11 +38,11 @@ export default function Catalog({ onOpen }) {
         ))}
       </div>
 
-      <motion.div layout className="mt-10 grid grid-cols-2 gap-x-6 gap-y-12 lg:grid-cols-3">
+      <motion.div layout className="mt-10 grid grid-cols-2 gap-6 lg:grid-cols-3">
         <AnimatePresence mode="popLayout">
-          {shown.map((p, i) => (
+          {shown.map((p) => (
             <motion.div key={p.id} layout exit={{ opacity: 0, scale: 0.9 }}>
-              <ProductCard product={p} onOpen={onOpen} index={i} />
+              <ProductCard product={p} onOpen={onOpen} />
             </motion.div>
           ))}
         </AnimatePresence>
