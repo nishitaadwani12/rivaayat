@@ -11,9 +11,12 @@ export default function About() {
     <section id="about" className="section">
       <div className="grid items-center gap-10 md:grid-cols-2">
         <Reveal>
-          <div className="relative aspect-[4/5] overflow-hidden rounded-[2rem] border border-white/70 bg-gradient-to-br from-maroon via-marigold to-teal shadow-lift">
-            <span className="absolute inset-0 flex items-center justify-center font-display text-6xl text-white/70">
+          <div className="relative aspect-[4/5] overflow-hidden border border-marigold/50 bg-gradient-to-br from-maroon via-marigold to-teal">
+            <span className="absolute inset-0 flex items-center justify-center font-display text-6xl italic text-white/80">
               Rivaayat
+            </span>
+            <span className="absolute bottom-4 left-4 bg-ivory px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-maroon">
+              Since day one
             </span>
             {/* Swap for a real photo: put a picture in /public and use an <img> here. */}
           </div>
@@ -32,9 +35,9 @@ export default function About() {
             </p>
           </Reveal>
           <Reveal delay={0.2}>
-            <div className="mt-8 grid gap-4 sm:grid-cols-3">
+            <div className="mt-8 space-y-5">
               {points.map((p) => (
-                <div key={p.t} className="rounded-2xl border border-white/70 bg-white/60 p-4 shadow-soft">
+                <div key={p.t} className="border-l-2 border-marigold pl-4">
                   <div className="font-display text-lg font-semibold text-maroon">{p.t}</div>
                   <div className="mt-1 text-sm text-ink/60">{p.d}</div>
                 </div>

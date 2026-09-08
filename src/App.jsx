@@ -22,7 +22,6 @@ export default function App() {
 
   return (
     <div className="relative min-h-screen">
-      <div className="grain-overlay" aria-hidden="true" />
       <Navbar />
       <main>
         <Hero />

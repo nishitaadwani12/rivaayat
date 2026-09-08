@@ -9,6 +9,10 @@
 
   body {
     @apply bg-ivory text-ink font-body antialiased;
+    /* Faint woven-lattice textile texture across the whole page. */
+    background-image:
+      repeating-linear-gradient(45deg, rgba(122, 31, 43, 0.035) 0 1px, transparent 1px 9px),
+      repeating-linear-gradient(-45deg, rgba(122, 31, 43, 0.035) 0 1px, transparent 1px 9px);
   }
 
   h1,
@@ -32,41 +36,39 @@
 }
 
 @layer components {
+  /* Editorial, squared buttons with letter-spaced caps (a distinct, boutique feel). */
   .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 rounded-full bg-maroon px-6 py-3
-      font-semibold text-ivory shadow-soft transition hover:-translate-y-0.5 hover:shadow-lift
-      focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-maroon
+    @apply inline-flex items-center justify-center gap-2 border border-maroon bg-maroon px-8 py-3.5
+      text-xs font-semibold uppercase tracking-[0.22em] text-ivory transition
+      hover:bg-transparent hover:text-maroon focus-visible:outline focus-visible:outline-2
+      focus-visible:outline-offset-2 focus-visible:outline-maroon
       disabled:cursor-not-allowed disabled:opacity-60;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-full border-2 border-ink/20
-      bg-white/60 px-6 py-3 font-semibold text-ink transition hover:-translate-y-0.5 hover:border-ink/40
-      focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-maroon;
+    @apply inline-flex items-center justify-center gap-2 border border-ink/30 bg-transparent px-8 py-3.5
+      text-xs font-semibold uppercase tracking-[0.22em] text-ink transition
+      hover:border-maroon hover:text-maroon focus-visible:outline focus-visible:outline-2
+      focus-visible:outline-offset-2 focus-visible:outline-maroon;
   }
 
   .section {
-    @apply mx-auto max-w-6xl px-5 py-20 sm:px-8;
+    @apply mx-auto max-w-6xl px-5 py-24 sm:px-8;
   }
 
+  /* A letter-spaced label preceded by a short gold rule. */
   .eyebrow {
-    @apply mb-3 inline-block rounded-full bg-white/70 px-3 py-1 text-xs font-bold uppercase
-      tracking-[0.2em] text-maroon;
+    @apply mb-4 inline-flex items-center gap-3 text-xs font-bold uppercase tracking-[0.3em] text-maroon
+      before:inline-block before:h-px before:w-10 before:bg-marigold before:content-[''];
   }
 
   .field {
-    @apply w-full rounded-2xl border border-ink/15 bg-white px-4 py-3 text-ink outline-none
-      focus:border-maroon/50;
+    @apply w-full border border-ink/20 bg-white/70 px-4 py-3 text-ink outline-none
+      focus:border-maroon;
   }
-}
 
-/* Faint film grain for a tactile, premium feel. */
-.grain-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 30;
-  pointer-events: none;
-  opacity: 0.05;
-  mix-blend-mode: multiply;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  /* Thin decorative gold rule used to separate editorial blocks. */
+  .rule-gold {
+    @apply h-px w-full bg-gradient-to-r from-transparent via-marigold/60 to-transparent;
+  }
 }

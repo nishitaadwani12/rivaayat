@@ -4,7 +4,7 @@ import { useCart } from '../context/CartContext'
 
 const links = [
   { href: '#shop', label: 'Shop' },
-  { href: '#featured', label: 'Featured' },
+  { href: '#featured', label: 'Lookbook' },
   { href: '#about', label: 'Our story' },
 ]
 
@@ -20,37 +20,51 @@ export default function Navbar() {
   }, [])
 
   return (
-    <header className="fixed inset-x-0 top-0 z-40 flex justify-center px-4 pt-4">
-      <nav
-        className={`flex w-full max-w-6xl items-center justify-between rounded-full border border-white/60 px-5 transition-all duration-300 ${
-          scrolled ? 'bg-ivory/80 py-2.5 shadow-soft backdrop-blur-xl' : 'bg-white/30 py-3.5 backdrop-blur-md'
-        }`}
-      >
-        <a href="#top" className="font-display text-2xl font-bold tracking-wide text-maroon">
-          {site.brand}
-        </a>
-
-        <div className="hidden items-center gap-8 md:flex">
+    <header
+      className={`fixed inset-x-0 top-0 z-40 border-b transition-all duration-300 ${
+        scrolled ? 'border-ink/10 bg-ivory/85 backdrop-blur-md' : 'border-transparent bg-transparent'
+      }`}
+    >
+      <nav className="mx-auto grid max-w-6xl grid-cols-3 items-center px-5 py-4 sm:px-8">
+        {/* Left: nav links */}
+        <div className="hidden items-center gap-7 md:flex">
           {links.map((l) => (
-            <a key={l.href} href={l.href} className="text-sm font-semibold text-ink/70 transition hover:text-maroon">
+            <a
+              key={l.href}
+              href={l.href}
+              className="text-xs font-semibold uppercase tracking-[0.18em] text-ink/70 transition hover:text-maroon"
+            >
               {l.label}
             </a>
           ))}
         </div>
 
-        <button
-          onClick={openCart}
-          className="relative flex items-center gap-2 rounded-full bg-maroon px-4 py-2 text-sm font-semibold text-ivory shadow-soft transition hover:-translate-y-0.5"
-          aria-label={`Open cart, ${count} items`}
+        {/* Center: wordmark */}
+        <a
+          href="#top"
+          className="col-start-2 justify-self-center text-center font-display text-3xl font-bold tracking-[0.15em] text-maroon"
         >
-          <span aria-hidden="true">🛍️</span>
-          <span className="hidden sm:inline">Bag</span>
-          {count > 0 && (
-            <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-marigold px-1 text-xs font-bold text-ink">
-              {count}
+          {site.brand}
+        </a>
+
+        {/* Right: bag */}
+        <div className="col-start-3 justify-self-end">
+          <button
+            onClick={openCart}
+            className="group flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-ink/80 transition hover:text-maroon"
+            aria-label={`Open bag, ${count} items`}
+          >
+            <span className="hidden sm:inline">Bag</span>
+            <span className="relative">
+              <span aria-hidden="true">🛍️</span>
+              {count > 0 && (
+                <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-maroon px-1 text-[10px] font-bold text-ivory">
+                  {count}
+                </span>
+              )}
             </span>
-          )}
-        </button>
+          </button>
+        </div>
       </nav>
     </header>
   )

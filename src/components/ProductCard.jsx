@@ -1,73 +1,58 @@
-import { useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { money } from '../lib/format'
 
-// A product card that tilts in 3D toward the pointer. Clicking opens the
-// quick view where the shopper picks a size and adds to the bag.
-export default function ProductCard({ product, onOpen }) {
-  const ref = useRef()
-  const [t, setT] = useState({ rx: 0, ry: 0 })
-
-  const onMove = (e) => {
-    const el = ref.current
-    if (!el) return
-    const r = el.getBoundingClientRect()
-    const px = (e.clientX - r.left) / r.width
-    const py = (e.clientY - r.top) / r.height
-    setT({ ry: (px - 0.5) * 12, rx: (0.5 - py) * 12 })
-  }
-  const reset = () => setT({ rx: 0, ry: 0 })
-
+// Editorial "lookbook" card: a tall portrait frame, quiet type, and a gentle
+// image zoom on hover. No tilt or shine, so it reads as a boutique catalogue.
+export default function ProductCard({ product, onOpen, index }) {
   return (
-    <motion.div
+    <motion.button
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-60px' }}
-      transition={{ duration: 0.5 }}
-      style={{ perspective: 1000 }}
+      transition={{ duration: 0.55 }}
+      onClick={() => onOpen(product)}
+      className="group block w-full text-left"
     >
-      <button
-        ref={ref}
-        onPointerMove={onMove}
-        onPointerLeave={reset}
-        onClick={() => onOpen(product)}
-        style={{
-          transform: `rotateX(${t.rx}deg) rotateY(${t.ry}deg)`,
-          transformStyle: 'preserve-3d',
-          transition: 'transform 0.15s ease-out',
-        }}
-        className="group w-full overflow-hidden rounded-3xl border border-white/70 bg-white/70 p-3 text-left shadow-soft backdrop-blur-sm hover:shadow-lift"
+      <div
+        className="relative aspect-[3/4] overflow-hidden"
+        style={{ backgroundColor: product.image ? undefined : product.swatch }}
       >
-        <div
-          className="relative flex h-64 items-center justify-center overflow-hidden rounded-2xl"
-          style={{ backgroundColor: product.image ? undefined : product.swatch }}
-        >
-          {product.image ? (
-            <img
-              src={product.image}
-              alt={product.name}
-              loading="lazy"
-              className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-            />
-          ) : (
-            <span className="select-none font-display text-3xl text-white/80" aria-hidden="true">
-              {product.name.split(' ')[0]}
-            </span>
-          )}
-          <span className="absolute left-3 top-3 rounded-full bg-white/85 px-2.5 py-1 text-[11px] font-bold uppercase tracking-wide text-ink/70">
-            {product.fabric}
+        {product.image ? (
+          <img
+            src={product.image}
+            alt={product.name}
+            loading="lazy"
+            className="h-full w-full object-cover transition duration-700 ease-out group-hover:scale-105"
+          />
+        ) : (
+          <span className="absolute inset-0 flex items-center justify-center font-display text-3xl italic text-white/85">
+            {product.name.split(' ')[0]}
           </span>
-        </div>
+        )}
 
-        <div className="px-2 pb-1 pt-4">
-          <h3 className="font-display text-xl font-semibold text-ink">{product.name}</h3>
-          <p className="mt-1 text-sm text-ink/55">{product.description}</p>
-          <div className="mt-3 flex items-center justify-between">
-            <span className="font-display text-lg font-bold text-maroon">{money(product.price)}</span>
-            <span className="text-sm font-semibold text-ink/60 group-hover:text-maroon">View →</span>
-          </div>
-        </div>
-      </button>
-    </motion.div>
+        {/* Index number, editorial detail. */}
+        {typeof index === 'number' && (
+          <span className="absolute left-3 top-3 font-display text-sm text-white/80">
+            {String(index + 1).padStart(2, '0')}
+          </span>
+        )}
+
+        {/* Fabric tag + hover "View" cue. */}
+        <span className="absolute bottom-3 left-3 text-[11px] font-semibold uppercase tracking-[0.18em] text-white/90">
+          {product.fabric}
+        </span>
+        <span className="absolute inset-x-0 bottom-0 translate-y-full bg-maroon py-3 text-center text-xs font-semibold uppercase tracking-[0.25em] text-ivory transition-transform duration-300 group-hover:translate-y-0">
+          View piece
+        </span>
+      </div>
+
+      <div className="mt-4 flex items-baseline justify-between gap-3">
+        <h3 className="font-display text-xl font-semibold text-ink group-hover:text-maroon">
+          {product.name}
+        </h3>
+        <span className="shrink-0 text-sm tracking-wide text-ink/70">{money(product.price)}</span>
+      </div>
+      <div className="mt-2 h-px w-full bg-ink/10" />
+    </motion.button>
   )
 }

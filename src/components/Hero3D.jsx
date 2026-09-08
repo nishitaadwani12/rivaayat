@@ -1,90 +1,97 @@
-import { Suspense, useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Float, ContactShadows, Environment } from '@react-three/drei'
+import * as THREE from 'three'
 
-// A central thread spool wound with fine strands, surrounded by softly folded
-// "fabric" panels. All primitive geometry, so it stays light and fast.
+// Rivaayat's signature: a length of silk rippling in 3D. A custom shader
+// displaces a fine plane with layered waves and lights it analytically, so it
+// drapes and shimmers like real fabric. Deliberately unlike anything else.
 
-const WRAP_COUNT = 16
-function Spool({ color = '#E4A11B', body = '#7A1F2B' }) {
-  return (
-    <group>
-      <mesh castShadow>
-        <cylinderGeometry args={[0.55, 0.55, 1.3, 40]} />
-        <meshStandardMaterial color={body} roughness={0.9} />
-      </mesh>
-      {Array.from({ length: WRAP_COUNT }, (_, i) => {
-        const y = -0.55 + (i / (WRAP_COUNT - 1)) * 1.1
-        return (
-          <mesh key={i} position={[0, y, 0]} rotation={[Math.PI / 2, 0, 0]}>
-            <torusGeometry args={[0.57, 0.045, 8, 48]} />
-            <meshStandardMaterial color={color} roughness={0.8} />
-          </mesh>
-        )
-      })}
-      {/* End caps */}
-      {[0.72, -0.72].map((y) => (
-        <mesh key={y} position={[0, y, 0]}>
-          <cylinderGeometry args={[0.72, 0.72, 0.08, 40]} />
-          <meshStandardMaterial color={body} roughness={0.9} />
-        </mesh>
-      ))}
-    </group>
-  )
-}
-
-function Panel({ pos, rot, color }) {
-  return (
-    <Float speed={1.6} rotationIntensity={0.5} floatIntensity={0.7}>
-      <mesh position={pos} rotation={rot} castShadow>
-        {/* A thin rounded box reads as a neatly folded set. */}
-        <boxGeometry args={[1.1, 1.4, 0.12]} />
-        <meshStandardMaterial color={color} roughness={0.95} />
-      </mesh>
-    </Float>
-  )
-}
-
-function Scene() {
+function Silk() {
+  const mat = useRef()
   const group = useRef()
   const { pointer } = useThree()
 
-  useFrame(() => {
-    if (!group.current) return
-    group.current.rotation.y += (pointer.x * 0.5 - group.current.rotation.y) * 0.05
-    group.current.rotation.x += (-pointer.y * 0.25 - group.current.rotation.x) * 0.05
+  const material = useMemo(
+    () =>
+      new THREE.ShaderMaterial({
+        side: THREE.DoubleSide,
+        uniforms: {
+          uTime: { value: 0 },
+          uColorA: { value: new THREE.Color('#7A1F2B') }, // maroon
+          uColorB: { value: new THREE.Color('#E4A11B') }, // marigold
+          uColorC: { value: new THREE.Color('#1F5C57') }, // teal shimmer
+          uLightDir: { value: new THREE.Vector3(0.4, 0.7, 0.8).normalize() },
+        },
+        vertexShader: /* glsl */ `
+          uniform float uTime;
+          varying vec3 vNormal;
+          varying vec2 vUv;
+          void main() {
+            vUv = uv;
+            vec3 p = position;
+            float a1 = 0.22, a2 = 0.14, a3 = 0.08;
+            float f1 = 2.0, f2 = 3.1, f3 = 5.0;
+            float z =
+              a1 * sin(p.x * f1 + uTime * 1.1) +
+              a2 * sin(p.y * f2 + uTime * 1.6 + p.x * 0.8) +
+              a3 * sin(p.x * f3 - uTime * 2.2);
+            float dzdx = a1 * f1 * cos(p.x * f1 + uTime * 1.1)
+                       + a2 * 0.8 * cos(p.y * f2 + uTime * 1.6 + p.x * 0.8)
+                       + a3 * f3 * cos(p.x * f3 - uTime * 2.2);
+            float dzdy = a2 * f2 * cos(p.y * f2 + uTime * 1.6 + p.x * 0.8);
+            vec3 n = normalize(vec3(-dzdx, -dzdy, 1.0));
+            vNormal = normalize(normalMatrix * n);
+            p.z += z;
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+          }
+        `,
+        fragmentShader: /* glsl */ `
+          uniform vec3 uColorA;
+          uniform vec3 uColorB;
+          uniform vec3 uColorC;
+          uniform vec3 uLightDir;
+          varying vec3 vNormal;
+          varying vec2 vUv;
+          void main() {
+            vec3 nrm = normalize(vNormal);
+            float diff = max(dot(nrm, normalize(uLightDir)), 0.0);
+            // Woven gradient down the length, with a teal sheen on the folds.
+            vec3 base = mix(uColorA, uColorB, smoothstep(0.0, 1.0, vUv.y));
+            base = mix(base, uColorC, pow(diff, 3.0) * 0.35);
+            // Fine warp/weft threads.
+            float weave = 0.90
+              + 0.06 * sin(vUv.x * 130.0)
+              + 0.04 * sin(vUv.y * 170.0);
+            vec3 col = base * weave * (0.42 + diff * 0.85);
+            gl_FragColor = vec4(col, 1.0);
+          }
+        `,
+      }),
+    [],
+  )
+
+  useFrame((state) => {
+    material.uniforms.uTime.value = state.clock.elapsedTime
+    if (group.current) {
+      // Gentle drift toward the pointer, like fabric catching a breeze.
+      group.current.rotation.y += (pointer.x * 0.25 - group.current.rotation.y) * 0.04
+      group.current.rotation.x += (0.12 - pointer.y * 0.15 - group.current.rotation.x) * 0.04
+    }
   })
 
   return (
-    <group ref={group}>
-      <Float speed={1.8} rotationIntensity={0.4} floatIntensity={0.6}>
-        <Spool />
-      </Float>
-      <Panel pos={[-2, 0.3, -0.5]} rot={[0.1, 0.5, 0.12]} color="#1F5C57" />
-      <Panel pos={[2, -0.2, -0.6]} rot={[-0.1, -0.5, -0.14]} color="#C97B84" />
-      <Panel pos={[1.4, 1.1, -1]} rot={[0.2, -0.3, 0.2]} color="#274060" />
+    <group ref={group} rotation={[0.12, 0, -0.18]}>
+      <mesh material={material} ref={mat}>
+        <planeGeometry args={[3.6, 4.6, 70, 90]} />
+      </mesh>
     </group>
   )
 }
 
-export default function Hero3D({ animate = true }) {
+export default function Hero3D() {
   return (
-    <Canvas
-      shadows
-      dpr={[1, 1.5]}
-      camera={{ position: [0, 0, 6], fov: 45 }}
-      frameloop={animate ? 'always' : 'demand'}
-      gl={{ antialias: true, alpha: true }}
-      aria-hidden="true"
-    >
-      <ambientLight intensity={0.7} />
-      <directionalLight position={[4, 6, 4]} intensity={1.15} castShadow />
-      <directionalLight position={[-4, 2, -2]} intensity={0.4} color="#E4A11B" />
-      <Suspense fallback={null}>
-        <Scene />
-        <ContactShadows position={[0, -1.9, 0]} opacity={0.35} scale={11} blur={2.6} far={4} color="#2B2320" />
-        <Environment preset="sunset" />
-      </Suspense>
+    <Canvas dpr={[1, 1.5]} camera={{ position: [0, 0, 5], fov: 42 }} gl={{ antialias: true, alpha: true }} aria-hidden="true">
+      <Silk />
     </Canvas>
   )
 }
